@@ -1,5 +1,9 @@
 import './MineField.css';
 
+import { useState } from 'react';
+
+//import { useImmer } from 'use-immer';
+import Cell from '../cell';
 import MineGrid from '../mineGrid';
 import MineCell from './MineCell';
 
@@ -8,12 +12,14 @@ type MineFieldProps = {
 };
 
 export default function MineField({ mines }: MineFieldProps) {
-  const onClick = (r: number, c: number) => {
-    return (e: React.MouseEvent<HTMLTableCellElement>) => {
-      const cell = mines.getCell(r, c);
+  const [grid, setGrid] = useState(mines.grid);
 
-      if (cell.isVisible && !cell.isBomb) {
-        // Clicking a revealed non-bomb does nothing.
+  const onClick = (row: number, column: number) => {
+    return (e: React.MouseEvent<HTMLTableCellElement>) => {
+      const cell = mines.getCell({ row, column });
+
+      if (cell.isVisible && !cell.isFlagged && !cell.isBomb) {
+        // Clicking a revealed number does nothing.
         e.preventDefault();
         return false;
       }
@@ -21,19 +27,31 @@ export default function MineField({ mines }: MineFieldProps) {
       if (e.type === 'contextmenu') {
         cell.toggleFlag();
       } else {
-        cell.reveal();
+        reveal(cell);
       }
 
-      e.currentTarget.innerText = cell.toString();
+      setGrid((v) => v.map((row) => row.map((cell) => cell)));
       e.preventDefault();
       return false;
     };
   };
 
+  const reveal = (cell: Cell) => {
+    if (cell.isVisible) {
+      return;
+    }
+
+    cell.reveal();
+
+    if (cell.value === 0) {
+      mines.getCellBorder(cell).forEach(reveal);
+    }
+  };
+
   return (
     <table cellSpacing="0" cellPadding="0">
       <tbody>
-        {mines.grid.map((row, r) => (
+        {grid.map((row, r) => (
           <tr id={`row_${r}`} key={r}>
             {row.map((cell, c) => (
               <td

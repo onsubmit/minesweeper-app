@@ -10,7 +10,7 @@ describe('MineGrid', () => {
     expect(field.columns).toBe(1);
     expect(field.bombCoordinates).toHaveLength(0);
 
-    const cell = field.getCell(0, 0);
+    const cell = field.getCell({ row: 0, column: 0 });
     expect(cell.value).toBe(0);
     expect(cell.isVisible).toBe(false);
     expect(cell.isFlagged).toBe(false);
@@ -24,7 +24,7 @@ describe('MineGrid', () => {
     expect(field.bombCoordinates).toHaveLength(1);
     expect(field.bombCoordinates[0]).toEqual({ row: 0, column: 0 });
 
-    const cell = field.getCell(0, 0);
+    const cell = field.getCell({ row: 0, column: 0 });
     expect(cell.value).toBe(-1);
     expect(cell.isVisible).toBe(false);
     expect(cell.isFlagged).toBe(false);
@@ -41,7 +41,7 @@ describe('MineGrid', () => {
 
     for (let r = 0; r < field.rows; r++) {
       for (let c = 0; field.columns < 2; c++) {
-        const cell = field.getCell(r, c);
+        const cell = field.getCell({ row: r, column: c });
         expect(cell.isVisible).toBe(false);
         expect(cell.isFlagged).toBe(false);
 

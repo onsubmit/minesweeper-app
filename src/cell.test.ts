@@ -4,7 +4,7 @@ import Cell from './cell';
 
 describe('Cell', () => {
   it('should create a non-bomb Cell', () => {
-    const cell = Cell.createNonBombCell(3);
+    const cell = Cell.createNonBombCell(3, { row: 0, column: 0 });
     expect(cell.value).toBe(3);
     expect(cell.isVisible).toBe(false);
     expect(cell.isFlagged).toBe(false);
@@ -12,7 +12,7 @@ describe('Cell', () => {
   });
 
   it('should create a bomb Cell', () => {
-    const cell = Cell.createBombCell();
+    const cell = Cell.createBombCell({ row: 0, column: 0 });
     expect(cell.value).toBe(-1);
     expect(cell.isVisible).toBe(false);
     expect(cell.isFlagged).toBe(false);
@@ -20,7 +20,7 @@ describe('Cell', () => {
   });
 
   it('should reveal a Cell', () => {
-    const cell = Cell.createNonBombCell(0);
+    const cell = Cell.createNonBombCell(0, { row: 0, column: 0 });
     expect(cell.isVisible).toBe(false);
 
     cell.reveal();
@@ -28,7 +28,7 @@ describe('Cell', () => {
   });
 
   it('should flag and unflag a Cell', () => {
-    const cell = Cell.createNonBombCell(0);
+    const cell = Cell.createNonBombCell(0, { row: 0, column: 0 });
     expect(cell.isFlagged).toBe(false);
 
     cell.toggleFlag();

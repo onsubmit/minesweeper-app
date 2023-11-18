@@ -1,3 +1,5 @@
+import { Coordinate } from './mineGrid';
+
 const BOMB_VALUE = -1;
 
 export default class Cell {
@@ -6,19 +8,19 @@ export default class Cell {
   private _isVisible: boolean;
   private _isFlagged: boolean;
 
-  private constructor(value: number | null) {
+  readonly coordinate: Coordinate;
+
+  private constructor(value: number | null, coordinate: Coordinate) {
     this._value = value;
     this._isVisible = false;
     this._isFlagged = false;
+
+    this.coordinate = coordinate;
   }
 
-  static createNonBombCell = (value: number) => new this(value);
-  static createBombCell = () => new this(BOMB_VALUE);
-  static createUnknownCell = () => new this(null);
-
-  get hasValue(): boolean {
-    return this._value !== null;
-  }
+  static createNonBombCell = (value: number, coordinate: Coordinate) => new this(value, coordinate);
+  static createBombCell = (coordinate: Coordinate) => new this(BOMB_VALUE, coordinate);
+  static createUnknownCell = (coordinate: Coordinate) => new this(null, coordinate);
 
   get value(): number {
     if (this._value === null) {
