@@ -1,6 +1,4 @@
 table {
-  border-collapse: collapse;
-  border: 1px solid #999;
   user-select: none;
 }
 
@@ -9,7 +7,7 @@ table tr {
 }
 
 table td {
-  border: 1px dotted #999;
+  color: #000;
   cursor: default;
   text-align: center;
   min-width: 1.5rem;
@@ -18,4 +16,16 @@ table td {
   max-height: 1.5rem;
   width: 1.5rem;
   height: 1.5rem;
+  box-shadow: inset -1px -1px 0px 0px #333, inset 0px 0px 0px 1px #FFF;
+  background: #BDBDBD;
+}
+
+table td:not(.visible):hover {
+  background: #917777;
+  box-shadow: inset -1px -1px 0px 0px #333, inset 0px 0px 0px 1px #BC9E9E;
+}
+
+table td.visible {
+  background: #939393;
+  box-shadow: inset -1px -1px 0px 0px #7B7B7B
 }

@@ -59,6 +59,7 @@ export default function MineField({ mines }: MineFieldProps) {
                 key={`(${r},${c})`}
                 onClick={onClick(r, c)}
                 onContextMenu={onClick(r, c)}
+                className={cell.isVisible ? 'visible' : undefined}
               >
                 <MineCell cell={cell} />
               </td>

@@ -56,7 +56,7 @@ export default class Cell {
     }
 
     if (!this.isVisible) {
-      return '⬜';
+      return '';
     }
 
     if (this.isBomb) {
