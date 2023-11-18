@@ -1,7 +1,8 @@
 const BOMB_VALUE = -1;
 
 export default class Cell {
-  private _value: number;
+  private readonly _value: number;
+
   private _isVisible: boolean;
   private _isFlagged: boolean;
 
