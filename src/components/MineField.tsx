@@ -17,20 +17,21 @@ export default function MineField({ mines }: MineFieldProps) {
   const onClick = (row: number, column: number) => {
     return (e: React.MouseEvent<HTMLTableCellElement>) => {
       const cell = mines.getCell({ row, column });
+      const isNumberCell = cell.isVisible && !cell.isFlagged && !cell.isBomb;
 
-      if (cell.isVisible && !cell.isFlagged && !cell.isBomb) {
-        // Clicking a revealed number does nothing.
-        e.preventDefault();
-        return false;
+      // TODO: Disallow losing on first click.
+
+      // Clicking a revealed number does nothing.
+      if (!isNumberCell) {
+        if (e.type === 'contextmenu') {
+          cell.toggleFlag();
+        } else {
+          reveal(cell);
+        }
+
+        setGrid((v) => v.map((row) => row.map((cell) => cell)));
       }
 
-      if (e.type === 'contextmenu') {
-        cell.toggleFlag();
-      } else {
-        reveal(cell);
-      }
-
-      setGrid((v) => v.map((row) => row.map((cell) => cell)));
       e.preventDefault();
       return false;
     };
