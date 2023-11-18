@@ -6,7 +6,7 @@ export type Coordinate = {
   column: number;
 };
 
-export class MineField {
+export default class MineGrid {
   private _grid: Array<Array<Cell>> = [];
 
   readonly rows: number;
@@ -19,7 +19,7 @@ export class MineField {
     this.columns = columns;
   }
 
-  static build = (rows: number, columns: number, numBombs: number): MineField => {
+  static build = (rows: number, columns: number, numBombs: number): MineGrid => {
     const dimensionSchema = integerSchema.gte(0);
     const numBombsSchema = integerSchema.gte(0).lte(rows * columns);
 
@@ -27,8 +27,8 @@ export class MineField {
     columns = dimensionSchema.parse(columns);
     numBombs = numBombsSchema.parse(numBombs);
 
-    const field = new MineField(rows, columns);
-    field._grid = Array.from(Array(rows), () =>
+    const mineGrid = new MineGrid(rows, columns);
+    mineGrid._grid = Array.from(Array(rows), () =>
       Array.from(Array(columns), () => Cell.createUnknownCell())
     );
 
@@ -39,12 +39,12 @@ export class MineField {
       }
     }
 
-    field.bombCoordinates = allCoordinates.sort(() => Math.random() - 0.5).slice(0, numBombs);
-    for (const { row, column } of field.bombCoordinates) {
-      field._grid[row]![column] = Cell.createBombCell();
+    mineGrid.bombCoordinates = allCoordinates.sort(() => Math.random() - 0.5).slice(0, numBombs);
+    for (const { row, column } of mineGrid.bombCoordinates) {
+      mineGrid._grid[row]![column] = Cell.createBombCell();
     }
 
-    return field;
+    return mineGrid;
   };
 
   get grid(): Array<Array<Cell>> {

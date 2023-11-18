@@ -1,20 +1,21 @@
 import './MineField.css';
 
-import { MineField as MineFieldClass } from '../mineField';
+import MineGrid from '../mineGrid';
 
 type MineFieldProps = {
-  mineField: MineFieldClass;
+  mines: MineGrid;
 };
 
-export default function MineField({ mineField }: MineFieldProps) {
+export default function MineField({ mines }: MineFieldProps) {
   const onClick = (r: number, c: number) => {
     return (e: React.MouseEvent<HTMLTableCellElement>) => {
-      const cell = mineField.getCell(r, c);
+      const cell = mines.getCell(r, c);
       if (e.type === 'contextmenu') {
         cell.toggleFlag();
       } else {
         cell.reveal();
       }
+
       e.currentTarget.innerText = cell.toString();
       e.preventDefault();
       return false;
@@ -24,7 +25,7 @@ export default function MineField({ mineField }: MineFieldProps) {
   return (
     <table cellSpacing="0" cellPadding="0">
       <tbody>
-        {mineField.grid.map((row, r) => (
+        {mines.grid.map((row, r) => (
           <tr id={`row_${r}`} key={r}>
             {row.map((cell, c) => (
               <td

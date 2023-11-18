@@ -1,11 +1,11 @@
 import './App.css';
 
 import MineField from './components/MineField';
-import { MineField as MineFieldClass } from './mineField';
+import MineGrid from './mineGrid';
 function App() {
   return (
     <>
-      <MineField mineField={MineFieldClass.build(9, 9, 10)}></MineField>
+      <MineField mines={MineGrid.build(9, 9, 10)}></MineField>
     </>
   );
 }

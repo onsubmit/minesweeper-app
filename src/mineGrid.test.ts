@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest';
 
-import { MineField } from './mineField';
+import MineGrid from './mineGrid';
 import { assertDefined } from './testHelpers';
 
-describe('MineField', () => {
-  it('should create a minimal MineField with no bomb', () => {
-    const field = MineField.build(1, 1, 0);
+describe('MineGrid', () => {
+  it('should create a minimal MineGrid with no bomb', () => {
+    const field = MineGrid.build(1, 1, 0);
     expect(field.rows).toBe(1);
     expect(field.columns).toBe(1);
     expect(field.bombCoordinates).toHaveLength(0);
@@ -17,8 +17,8 @@ describe('MineField', () => {
     expect(cell.isBomb).toBe(false);
   });
 
-  it('should create a minimal MineField with a bomb', () => {
-    const field = MineField.build(1, 1, 1);
+  it('should create a minimal MineGrid with a bomb', () => {
+    const field = MineGrid.build(1, 1, 1);
     expect(field.rows).toBe(1);
     expect(field.columns).toBe(1);
     expect(field.bombCoordinates).toHaveLength(1);
@@ -31,8 +31,8 @@ describe('MineField', () => {
     expect(cell.isBomb).toBe(true);
   });
 
-  it('should create a basic MineField', () => {
-    const field = MineField.build(2, 2, 1);
+  it('should create a basic MineGrid', () => {
+    const field = MineGrid.build(2, 2, 1);
     expect(field.rows).toBe(2);
     expect(field.columns).toBe(2);
     expect(field.bombCoordinates).toHaveLength(1);
