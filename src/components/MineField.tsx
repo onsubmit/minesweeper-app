@@ -2,7 +2,6 @@ import './MineField.css';
 
 import { useState } from 'react';
 
-//import { useImmer } from 'use-immer';
 import Cell from '../cell';
 import MineGrid from '../mineGrid';
 import MineCell from './MineCell';
