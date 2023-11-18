@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import MineField from './mineField';
+import { MineField } from './mineField';
 import { assertDefined } from './testHelpers';
 
 describe('MineField', () => {

@@ -6,8 +6,8 @@ export type Coordinate = {
   column: number;
 };
 
-export default class MineField {
-  private _grid: Array<Array<Cell | undefined>> = [];
+export class MineField {
+  private _grid: Array<Array<Cell>> = [];
 
   readonly rows: number;
   readonly columns: number;
@@ -28,7 +28,9 @@ export default class MineField {
     numBombs = numBombsSchema.parse(numBombs);
 
     const field = new MineField(rows, columns);
-    field._grid = Array.from(Array(rows), () => new Array(columns));
+    field._grid = Array.from(Array(rows), () =>
+      Array.from(Array(columns), () => Cell.createUnknownCell())
+    );
 
     const allCoordinates: Array<Coordinate> = [];
     for (let row = 0; row < rows; row++) {
@@ -45,10 +47,14 @@ export default class MineField {
     return field;
   };
 
+  get grid(): Array<Array<Cell>> {
+    return this._grid;
+  }
+
   getCell = (row: number, column: number): Cell => {
-    const existingCell = this._getCell(row, column);
-    if (existingCell) {
-      return existingCell;
+    const cell = this._getCell(row, column);
+    if (cell.hasValue) {
+      return cell;
     }
 
     let numNeighboringBombs = 0;
@@ -59,6 +65,10 @@ export default class MineField {
 
       for (let c = column - 1; c <= column + 1; c++) {
         if (c < 0 || c >= this.columns) {
+          continue;
+        }
+
+        if (r === row && c === column) {
           continue;
         }
 
@@ -73,9 +83,9 @@ export default class MineField {
     return newCell;
   };
 
-  private _getCell = (row: number, column: number): Cell | undefined => {
+  private _getCell = (row: number, column: number): Cell => {
     row = integerSchema.lt(this.rows).parse(row);
     column = integerSchema.lt(this.columns).parse(column);
-    return this._grid[row]![column];
+    return this._grid[row]![column]!;
   };
 }

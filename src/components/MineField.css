@@ -1,0 +1,21 @@
+table {
+  border-collapse: collapse;
+  border: 1px solid #999;
+  user-select: none;
+}
+
+table tr {
+  min-height: 1rem;
+}
+
+table td {
+  border: 1px dotted #999;
+  cursor: default;
+  text-align: center;
+  min-width: 1.5rem;
+  min-height: 1.5rem;
+  max-width: 1.5rem;
+  max-height: 1.5rem;
+  width: 1.5rem;
+  height: 1.5rem;
+}
