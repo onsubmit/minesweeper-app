@@ -43,6 +43,7 @@ export default class Cell {
   }
 
   reveal = () => {
+    this._isFlagged = false;
     this._isVisible = true;
   };
 

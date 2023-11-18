@@ -26,7 +26,7 @@ export default function MineField({ mines }: MineFieldProps) {
         if (e.type === 'contextmenu') {
           cell.toggleFlag();
         } else {
-          reveal(cell);
+          reveal(cell, { revealFlaggedCells: true });
         }
 
         setGrid((v) => v.map((row) => row.map((cell) => cell)));
@@ -37,15 +37,19 @@ export default function MineField({ mines }: MineFieldProps) {
     };
   };
 
-  const reveal = (cell: Cell) => {
+  const reveal = (cell: Cell, options: { revealFlaggedCells: boolean }) => {
     if (cell.isVisible) {
+      return;
+    }
+
+    if (cell.isFlagged && !options.revealFlaggedCells) {
       return;
     }
 
     cell.reveal();
 
     if (cell.value === 0) {
-      mines.getCellBorder(cell).forEach(reveal);
+      mines.getCellBorder(cell).forEach((c) => reveal(c, { revealFlaggedCells: false }));
     }
   };
 
