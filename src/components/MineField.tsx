@@ -1,6 +1,7 @@
 import './MineField.css';
 
 import MineGrid from '../mineGrid';
+import MineCell from './MineCell';
 
 type MineFieldProps = {
   mines: MineGrid;
@@ -41,7 +42,7 @@ export default function MineField({ mines }: MineFieldProps) {
                 onClick={onClick(r, c)}
                 onContextMenu={onClick(r, c)}
               >
-                {cell.toString()}
+                <MineCell cell={cell} />
               </td>
             ))}
           </tr>
