@@ -10,6 +10,13 @@ export default function MineField({ mines }: MineFieldProps) {
   const onClick = (r: number, c: number) => {
     return (e: React.MouseEvent<HTMLTableCellElement>) => {
       const cell = mines.getCell(r, c);
+
+      if (cell.isVisible && !cell.isBomb) {
+        // Clicking a revealed non-bomb does nothing.
+        e.preventDefault();
+        return false;
+      }
+
       if (e.type === 'contextmenu') {
         cell.toggleFlag();
       } else {
