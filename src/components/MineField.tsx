@@ -44,7 +44,7 @@ export default function MineField({ mines }: MineFieldProps) {
       return;
     }
 
-    if (cell.isFlagged && !options?.revealFlaggedCells) {
+    if (cell.isFlagged && !options.revealFlaggedCells) {
       return;
     }
 
