@@ -23,15 +23,18 @@ export default function MineField({ mines }: MineFieldProps) {
       if (!isGameOver && !isNumberCell) {
         if (e.type === 'contextmenu') {
           cell.toggleFlag();
+          mines.removeClearedRows();
         } else {
           reveal(cell, { revealFlaggedCells: true });
           if (cell.isBomb) {
             setIsGameOver(true);
             mines.bombs.forEach((c) => reveal(c, { revealFlaggedCells: true }));
+          } else {
+            mines.removeClearedRows();
           }
         }
 
-        setGrid((v) => v.map((row) => row.map((cell) => cell)));
+        setGrid((_) => mines.grid.map((row) => row.map((cell) => cell)));
       }
 
       e.preventDefault();
