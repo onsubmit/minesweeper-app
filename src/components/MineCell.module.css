@@ -1,0 +1,33 @@
+.mineCell {
+  &.value_1 {
+    color: #0000FF;
+  }
+
+  &.value_2 {
+    color: #007B00;
+  }
+
+  &.value_3 {
+    color: #FF0000;
+  }
+
+  &.value_4 {
+    color: #00007B;
+  }
+
+  &.value_5 {
+    color: #7B0000;
+  }
+
+  &.value_6 {
+    color: #007B7B;
+  }
+
+  &.value_7 {
+    color: #000000;
+  }
+
+  &.value_8 {
+    color: #7B7B7B;
+  }
+}

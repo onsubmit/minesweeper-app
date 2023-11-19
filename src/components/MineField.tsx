@@ -1,10 +1,9 @@
-import './MineField.css';
-
 import { useState } from 'react';
 
 import Cell from '../cell';
 import MineGrid from '../mineGrid';
 import MineCell from './MineCell';
+import styles from './MineField.module.css';
 
 type MineFieldProps = {
   mines: MineGrid;
@@ -53,7 +52,7 @@ export default function MineField({ mines }: MineFieldProps) {
   };
 
   return (
-    <table cellSpacing="0" cellPadding="0">
+    <table className={styles.mineField} cellSpacing="0" cellPadding="0">
       <tbody>
         {grid.map((row, r) => (
           <tr id={`row_${r}`} key={r}>
@@ -63,7 +62,7 @@ export default function MineField({ mines }: MineFieldProps) {
                 key={`(${r},${c})`}
                 onClick={onClick(r, c)}
                 onContextMenu={onClick(r, c)}
-                className={cell.isVisible ? 'visible' : undefined}
+                className={cell.isVisible ? styles.visible : undefined}
               >
                 <MineCell cell={cell} />
               </td>

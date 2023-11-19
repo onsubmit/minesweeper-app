@@ -1,0 +1,32 @@
+.mineField {
+  user-select: none;
+
+  tr {
+    min-height: 1rem;
+  }
+
+  td {
+    cursor: default;
+    text-align: center;
+    text-shadow: 0.5px 0.5px #000;
+    font-weight: 600;
+    min-width: 1.5rem;
+    min-height: 1.5rem;
+    max-width: 1.5rem;
+    max-height: 1.5rem;
+    width: 1.5rem;
+    height: 1.5rem;
+    box-shadow: inset -1px -1px 0px 0px #333, inset 0px 0px 0px 1px #FFF;
+    background: #BDBDBD;
+
+    &.visible {
+      background: #939393;
+      box-shadow: inset -1px -1px 0px 0px #7B7B7B
+    }
+
+    &:not(.visible):hover {
+      background: #917777;
+      box-shadow: inset -1px -1px 0px 0px #333, inset 0px 0px 0px 1px #BC9E9E;
+    }
+  }
+}
