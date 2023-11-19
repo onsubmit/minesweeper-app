@@ -10,6 +10,7 @@ type MineFieldProps = {
 };
 
 export default function MineField({ mines }: MineFieldProps) {
+  const [isGameOver, setIsGameOver] = useState(false);
   const [grid, setGrid] = useState(mines.grid);
 
   const onClick = (row: number, column: number) => {
@@ -19,13 +20,13 @@ export default function MineField({ mines }: MineFieldProps) {
 
       // TODO: Disallow losing on first click.
 
-      // Clicking a revealed number does nothing.
-      if (!isNumberCell) {
+      if (!isGameOver && !isNumberCell) {
         if (e.type === 'contextmenu') {
           cell.toggleFlag();
         } else {
           reveal(cell, { revealFlaggedCells: true });
           if (cell.isBomb) {
+            setIsGameOver(true);
             mines.bombs.forEach((c) => reveal(c, { revealFlaggedCells: true }));
           }
         }
