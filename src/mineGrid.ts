@@ -35,7 +35,7 @@ export default class MineGrid {
 
     mineGrid.bombCoordinates = MineGrid._getRandomBombCoordinates(rows, columns, numBombs);
     for (const { row, column } of mineGrid.bombCoordinates) {
-      mineGrid._grid[row]![column] = Cell.createBombCell({ row, column });
+      mineGrid._setCellOrThrow({ row, column }, Cell.createBombCell({ row, column }));
     }
 
     mineGrid._determineCellValues();
