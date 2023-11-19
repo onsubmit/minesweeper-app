@@ -13,7 +13,7 @@ export default class MineGrid {
   private readonly _rows: number;
   private readonly _columns: number;
 
-  bombCoordinates: ReadonlyArray<Coordinate> = [];
+  private _bombs: Array<Cell> = [];
 
   private constructor(rows: number, columns: number) {
     this._rows = rows;
@@ -33,9 +33,10 @@ export default class MineGrid {
       Array.from({ length: columns }, (_, column) => Cell.createUnknownCell({ row, column }))
     );
 
-    mineGrid.bombCoordinates = MineGrid._getRandomBombCoordinates(rows, columns, numBombs);
-    for (const { row, column } of mineGrid.bombCoordinates) {
-      mineGrid._setCellOrThrow({ row, column }, Cell.createBombCell({ row, column }));
+    const bombCoordinates = MineGrid._getRandomBombCoordinates(rows, columns, numBombs);
+    for (const bombCoordinate of bombCoordinates) {
+      const bombCell = Cell.createBombCell(bombCoordinate);
+      mineGrid._setCellOrThrow(bombCoordinate, bombCell);
     }
 
     mineGrid._determineCellValues();
@@ -60,6 +61,10 @@ export default class MineGrid {
 
   get grid(): Array<Array<Cell>> {
     return this._grid;
+  }
+
+  get bombs(): Array<Cell> {
+    return this._bombs;
   }
 
   getCell = (coordinate: Coordinate): Cell => {
@@ -121,6 +126,10 @@ export default class MineGrid {
     }
 
     gridRow[column] = cell;
+
+    if (cell.isBomb) {
+      this._bombs.push(cell);
+    }
   };
 
   private _determineCellValues = () => {

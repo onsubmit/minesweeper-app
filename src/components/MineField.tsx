@@ -25,6 +25,9 @@ export default function MineField({ mines }: MineFieldProps) {
           cell.toggleFlag();
         } else {
           reveal(cell, { revealFlaggedCells: true });
+          if (cell.isBomb) {
+            mines.bombs.forEach((c) => reveal(c, { revealFlaggedCells: true }));
+          }
         }
 
         setGrid((v) => v.map((row) => row.map((cell) => cell)));
@@ -40,7 +43,7 @@ export default function MineField({ mines }: MineFieldProps) {
       return;
     }
 
-    if (cell.isFlagged && !options.revealFlaggedCells) {
+    if (cell.isFlagged && !options?.revealFlaggedCells) {
       return;
     }
 

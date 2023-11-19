@@ -8,7 +8,7 @@ describe('MineGrid', () => {
   describe('build', () => {
     it('should create a minimal MineGrid with no bomb', () => {
       const field = MineGrid.build(1, 1, 0);
-      expect(field.bombCoordinates).toHaveLength(0);
+      expect(field.bombs).toHaveLength(0);
 
       const cell = field.getCell({ row: 0, column: 0 });
       expect(cell.value).toBe(0);
@@ -19,8 +19,8 @@ describe('MineGrid', () => {
 
     it('should create a minimal MineGrid with a bomb', () => {
       const field = MineGrid.build(1, 1, 1);
-      expect(field.bombCoordinates).toHaveLength(1);
-      expect(field.bombCoordinates[0]).toEqual({ row: 0, column: 0 });
+      expect(field.bombs).toHaveLength(1);
+      expect(field.bombs[0]).toStrictEqual(field.getCell({ row: 0, column: 0 }));
 
       const cell = field.getCell({ row: 0, column: 0 });
       expect(cell.value).toBe(-1);
@@ -31,9 +31,11 @@ describe('MineGrid', () => {
 
     it('should create a basic MineGrid', () => {
       const field = MineGrid.build(2, 2, 1);
-      expect(field.bombCoordinates).toHaveLength(1);
-      assertDefined(field.bombCoordinates[0]);
-      const { row, column } = field.bombCoordinates[0];
+      expect(field.bombs).toHaveLength(1);
+      assertDefined(field.bombs[0]);
+      const {
+        coordinate: { row, column },
+      } = field.bombs[0];
 
       for (let r = 0; r < 2; r++) {
         for (let c = 0; c < 2; c++) {
