@@ -3,7 +3,7 @@ import { Coordinate } from './mineGrid';
 const BOMB_VALUE = -1;
 
 export default class Cell {
-  private readonly _value: number | null;
+  private _value: number | null;
 
   private _isVisible: boolean;
   private _isFlagged: boolean;
@@ -28,6 +28,14 @@ export default class Cell {
     }
 
     return this._value;
+  }
+
+  set value(v: number) {
+    this._value = v;
+  }
+
+  get hasValue(): boolean {
+    return this._value !== null;
   }
 
   get isVisible(): boolean {

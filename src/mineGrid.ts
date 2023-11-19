@@ -176,7 +176,8 @@ export default class MineGrid {
   private _determineCellValues = () => {
     for (let row = 0; row < this._rows; row++) {
       for (let column = 0; column < this._columns; column++) {
-        if (this._getCellOrThrow({ row, column }).isBomb) {
+        const cell = this._getCellOrThrow({ row, column });
+        if (cell.isBomb) {
           continue;
         }
 
@@ -201,10 +202,14 @@ export default class MineGrid {
           }
         }
 
-        this._setCellOrThrow(
-          { row, column },
-          Cell.createNonBombCell(numNeighboringBombs, { row, column })
-        );
+        if (cell.hasValue) {
+          cell.value = numNeighboringBombs;
+        } else {
+          this._setCellOrThrow(
+            { row, column },
+            Cell.createNonBombCell(numNeighboringBombs, { row, column })
+          );
+        }
       }
     }
   };
