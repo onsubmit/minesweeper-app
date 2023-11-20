@@ -9,23 +9,40 @@
     cursor: default;
     text-align: center;
     font-weight: 600;
-    min-width: 1.5rem;
-    min-height: 1.5rem;
-    max-width: 1.5rem;
-    max-height: 1.5rem;
-    width: 1.5rem;
-    height: 1.5rem;
-    box-shadow: inset -1px -1px 0px 0px #333, inset 0px 0px 0px 1px #FFF;
+    font-size: 7vmin;
+    min-width: var(--cell-size);
+    min-height: var(--cell-size);
+    max-width: var(--cell-size);
+    max-height: var(--cell-size);
+    width: var(--cell-size);
+    height: var(--cell-size);
+    box-shadow: inset -0.5vh -0.5vh 0 0 #333, inset 0 0 0 0.5vh #FFF;
     background: #BDBDBD;
 
     &.visible {
       background: #939393;
-      box-shadow: inset -1px -1px 0px 0px #7B7B7B
+      box-shadow: inset -0.5vh -0.5vh 0 0 #7B7B7B
     }
 
     &:not(.visible):hover {
       background: #917777;
-      box-shadow: inset -1px -1px 0px 0px #333, inset 0px 0px 0px 1px #BC9E9E;
+      box-shadow: inset -0.5vh -0.5vh 0 0 #333, inset 0 0 0 0.5vh #BC9E9E;
+    }
+  }
+}
+
+@media (max-aspect-ratio: 1/1) {
+  .mineField {
+    td {
+      --cell-size: 10vw;
+    }
+  }
+}
+
+@media (min-aspect-ratio: 1/1) {
+  .mineField {
+    td {
+      --cell-size: 10vh;
     }
   }
 }

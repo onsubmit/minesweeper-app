@@ -1,43 +1,43 @@
 .mineCell {
-  text-shadow: 0.5px 0.5px #333333;
+  text-shadow: 0.2vh 0.2vh #333333;
 
   &.value_1 {
     color: #0000FF;
-    text-shadow: 0.5px 0.5px #000033;
+    text-shadow: 0.2vh 0.2vh #000033;
   }
 
   &.value_2 {
     color: #007B00;
-    text-shadow: 0.5px 0.5px #003300;
+    text-shadow: 0.2vh 0.2vh #003300;
   }
 
   &.value_3 {
     color: #FF0000;
-    text-shadow: 0.5px 0.5px #330000;
+    text-shadow: 0.2vh 0.2vh #330000;
   }
 
   &.value_4 {
     color: #00007B;
-    text-shadow: 0.5px 0.5px #AAAACC;
+    text-shadow: 0.2vh 0.2vh #AAAACC;
   }
 
   &.value_5 {
     color: #7B0000;
-    text-shadow: 0.5px 0.5px #CCAAAA;
+    text-shadow: 0.2vh 0.2vh #CCAAAA;
   }
 
   &.value_6 {
     color: #007B7B;
-    text-shadow: 0.5px 0.5px #003333;
+    text-shadow: 0.2vh 0.2vh #003333;
   }
 
   &.value_7 {
     color: #000000;
-    text-shadow: 0.5px 0.5px #AAAAAA;
+    text-shadow: 0.2vh 0.2vh #AAAAAA;
   }
 
   &.value_8 {
     color: #7B7B7B;
-    text-shadow: 0.5px 0.5px #333333;
+    text-shadow: 0.2vh 0.2vh #333333;
   }
 }
