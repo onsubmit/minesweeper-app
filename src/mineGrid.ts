@@ -9,12 +9,11 @@ export type Coordinate = {
 
 export default class MineGrid {
   private _grid: Array<Array<Cell>> = [];
+  private _bombs: Array<Cell> = [];
 
   private readonly _rows: number;
   private readonly _columns: number;
   private readonly _bombChance: number;
-
-  private _bombs: Array<Cell> = [];
 
   private constructor(rows: number, columns: number, bombChance: number) {
     this._rows = rows;
@@ -125,11 +124,18 @@ export default class MineGrid {
     }
 
     for (let row = numClearedRows - 1; row >= 0; row--) {
-      const newRow = Array.from({ length: this._columns }, (_, column) =>
-        Math.random() < this._bombChance
-          ? Cell.createBombCell({ row, column })
-          : Cell.createUnknownCell({ row, column })
-      );
+      const newRow = Array.from({ length: this._columns }, (_, column) => {
+        const cell =
+          Math.random() < this._bombChance
+            ? Cell.createBombCell({ row, column })
+            : Cell.createUnknownCell({ row, column });
+
+        if (cell.isBomb) {
+          this._bombs.push(cell);
+        }
+
+        return cell;
+      });
 
       this._grid.unshift(newRow);
     }
