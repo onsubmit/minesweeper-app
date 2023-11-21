@@ -10,14 +10,14 @@ export type Coordinate = {
 export default class MineGrid {
   private _grid: Array<Array<Cell>> = [];
   private _bombs: Array<Cell> = [];
-
-  private readonly _rows: number;
-  private readonly _columns: number;
   private readonly _bombChance: number;
 
+  readonly rows: number;
+  readonly columns: number;
+
   private constructor(rows: number, columns: number, bombChance: number) {
-    this._rows = rows;
-    this._columns = columns;
+    this.rows = rows;
+    this.columns = columns;
     this._bombChance = bombChance;
   }
 
@@ -71,8 +71,8 @@ export default class MineGrid {
   getCell = (coordinate: Coordinate): Cell => {
     let { row, column } = coordinate;
 
-    row = simpleParse(integerSchema.gte(0).lt(this._rows), row);
-    column = simpleParse(integerSchema.gte(0).lt(this._columns), column);
+    row = simpleParse(integerSchema.gte(0).lt(this.rows), row);
+    column = simpleParse(integerSchema.gte(0).lt(this.columns), column);
 
     return this._getCellOrThrow({ row, column });
   };
@@ -82,12 +82,12 @@ export default class MineGrid {
 
     const cells: Array<Cell> = [];
     for (let r = row - 1; r <= row + 1; r++) {
-      if (r < 0 || r >= this._rows) {
+      if (r < 0 || r >= this.rows) {
         continue;
       }
 
       for (let c = column - 1; c <= column + 1; c++) {
-        if (c < 0 || c >= this._columns) {
+        if (c < 0 || c >= this.columns) {
           continue;
         }
 
@@ -102,9 +102,9 @@ export default class MineGrid {
     return cells;
   };
 
-  removeClearedRows = () => {
+  removeClearedRows = (): number => {
     const rowsToRemove: number[] = [];
-    for (let row = 0; row < this._rows; row++) {
+    for (let row = 0; row < this.rows; row++) {
       const isRowClear = this._getRowOrThrow(row).every(
         (cell) => cell.isVisible || (cell.isFlagged && cell.isBomb)
       );
@@ -116,7 +116,7 @@ export default class MineGrid {
 
     const numClearedRows = rowsToRemove.length;
     if (numClearedRows === 0) {
-      return;
+      return 0;
     }
 
     for (let r = numClearedRows - 1; r >= 0; r--) {
@@ -124,7 +124,7 @@ export default class MineGrid {
     }
 
     for (let row = numClearedRows - 1; row >= 0; row--) {
-      const newRow = Array.from({ length: this._columns }, (_, column) => {
+      const newRow = Array.from({ length: this.columns }, (_, column) => {
         const cell =
           Math.random() < this._bombChance
             ? Cell.createBombCell({ row, column })
@@ -140,14 +140,15 @@ export default class MineGrid {
       this._grid.unshift(newRow);
     }
 
-    for (let row = numClearedRows; row < this._rows; row++) {
-      for (let column = 0; column < this._columns; column++) {
+    for (let row = numClearedRows; row < this.rows; row++) {
+      for (let column = 0; column < this.columns; column++) {
         const cell = this.getCell({ row, column });
         cell.coordinate.row = row;
       }
     }
 
     this._determineCellValues();
+    return numClearedRows;
   };
 
   private _getCellOrThrow = (coordinate: Coordinate): Cell => {
@@ -180,8 +181,8 @@ export default class MineGrid {
   };
 
   private _determineCellValues = () => {
-    for (let row = 0; row < this._rows; row++) {
-      for (let column = 0; column < this._columns; column++) {
+    for (let row = 0; row < this.rows; row++) {
+      for (let column = 0; column < this.columns; column++) {
         const cell = this._getCellOrThrow({ row, column });
         if (cell.isBomb) {
           continue;
@@ -189,12 +190,12 @@ export default class MineGrid {
 
         let numNeighboringBombs = 0;
         for (let r = row - 1; r <= row + 1; r++) {
-          if (r < 0 || r >= this._rows) {
+          if (r < 0 || r >= this.rows) {
             continue;
           }
 
           for (let c = column - 1; c <= column + 1; c++) {
-            if (c < 0 || c >= this._columns) {
+            if (c < 0 || c >= this.columns) {
               continue;
             }
 

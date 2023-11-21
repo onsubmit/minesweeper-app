@@ -20,17 +20,34 @@ export default function MineField({ mines }: MineFieldProps) {
 
       // TODO: Disallow losing on first click.
 
+      let removeClearedRows = true;
       if (!isGameOver && !isNumberCell) {
         if (e.type === 'contextmenu') {
           cell.toggleFlag();
-          mines.removeClearedRows();
         } else {
           reveal(cell, { revealFlaggedCells: true });
+
           if (cell.isBomb) {
+            removeClearedRows = false;
             setIsGameOver(true);
             mines.bombs.forEach((c) => reveal(c, { revealFlaggedCells: true }));
-          } else {
-            mines.removeClearedRows();
+          }
+        }
+
+        if (removeClearedRows) {
+          const numClearedRows = mines.removeClearedRows();
+
+          // In newly added rows, reveal the zeros that border already visible zeros.
+          if (numClearedRows > 0) {
+            for (let column = 0; column < mines.columns; column++) {
+              const cell = mines.getCell({ row: numClearedRows - 1, column });
+              if (
+                cell.value === 0 &&
+                mines.getCellBorder(cell).some((c) => c.isVisible && c.value === 0)
+              ) {
+                reveal(cell, { revealFlaggedCells: true });
+              }
+            }
           }
         }
 
