@@ -9,7 +9,7 @@
     cursor: default;
     text-align: center;
     font-weight: 600;
-    font-size: 7vmin;
+    font-size: var(--font-size);
     min-width: var(--cell-size);
     min-height: var(--cell-size);
     max-width: var(--cell-size);
@@ -36,18 +36,20 @@
   }
 }
 
-@media (max-aspect-ratio: 1/1) {
+@media (max-aspect-ratio: 1/2) {
   .mineField {
     td {
-      --cell-size: 10vw;
+      --cell-size: 8vw;
+      --font-size: 6vw;
     }
   }
 }
 
-@media (min-aspect-ratio: 1/1) {
+@media (min-aspect-ratio: 1/2) {
   .mineField {
     td {
-      --cell-size: 10vh;
+      --cell-size: 4vh;
+      --font-size: 3vh;
     }
   }
 }
