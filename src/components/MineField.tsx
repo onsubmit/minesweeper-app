@@ -9,27 +9,39 @@ type MineFieldProps = {
   mines: MineGrid;
 };
 
+type GameState = 'not-started' | 'started' | 'ended';
+
 export default function MineField({ mines }: MineFieldProps) {
-  const [isGameOver, setIsGameOver] = useState(false);
+  const [gameState, setGameState] = useState<GameState>('not-started');
   const [grid, setGrid] = useState(mines.grid);
 
   const onClick = (row: number, column: number) => {
     return (e: React.MouseEvent<HTMLTableCellElement>) => {
+      const isFirstClick = gameState === 'not-started';
+      if (isFirstClick) {
+        setGameState('started');
+      }
+
       const cell = mines.getCell({ row, column });
       const isNumberCell = cell.isVisible && !cell.isFlagged && !cell.isBomb;
 
-      // TODO: Disallow losing on first click.
-
       let removeClearedRows = true;
-      if (!isGameOver && !isNumberCell) {
+      if (gameState !== 'ended' && !isNumberCell) {
         if (e.type === 'contextmenu') {
           cell.toggleFlag();
         } else {
+          if (gameState === 'not-started') {
+            setGameState('started');
+            if (isFirstClick && cell.isBomb) {
+              mines.tryMoveBombCellElsewhere(cell);
+            }
+          }
+
           reveal(cell, { revealFlaggedCells: true });
 
           if (cell.isBomb) {
             removeClearedRows = false;
-            setIsGameOver(true);
+            setGameState('ended');
             mines.bombs.forEach((c) => reveal(c, { revealFlaggedCells: true }));
           }
         }

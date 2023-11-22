@@ -1,4 +1,5 @@
 import Cell from './cell';
+import { getRandomArrayElement } from './utils/getRandomArrayElement';
 import { shuffleArray } from './utils/shuffleArray';
 import { integerSchema, simpleParse } from './utils/zodUtils';
 
@@ -37,7 +38,7 @@ export default class MineGrid {
     const bombCoordinates = MineGrid._getRandomBombCoordinates(rows, columns, numBombs);
     for (const bombCoordinate of bombCoordinates) {
       const bombCell = Cell.createBombCell(bombCoordinate);
-      mineGrid._setCellOrThrow(bombCoordinate, bombCell);
+      mineGrid._setCellOrThrow(bombCell);
     }
 
     mineGrid._determineCellValues();
@@ -151,6 +152,47 @@ export default class MineGrid {
     return numClearedRows;
   };
 
+  tryMoveBombCellElsewhere = (cell: Cell): void => {
+    if (!cell.isBomb) {
+      throw new Error('You can only move a bomb cell.');
+    }
+
+    if (this._bombChance === 1) {
+      // The entire grid is bombs; don't bother.
+      return;
+    }
+
+    const nonBombCoordinates: Array<Coordinate> = [];
+    for (let row = 0; row < this.rows; row++) {
+      for (let column = 0; column < this.columns; column++) {
+        const coordinate = { row, column };
+        if (this.getCell(coordinate).isBomb) {
+          continue;
+        }
+
+        nonBombCoordinates.push(coordinate);
+      }
+    }
+
+    cell.value = 0;
+    for (const oldBorderCell of this.getCellBorder(cell)) {
+      if (oldBorderCell.isBomb) {
+        cell.value++;
+      } else {
+        oldBorderCell.value--;
+      }
+    }
+
+    const newCoordinate = getRandomArrayElement(nonBombCoordinates)!;
+    const newCell = Cell.createBombCell(newCoordinate);
+    this._setCellOrThrow(newCell);
+    for (const newBorderCell of this.getCellBorder(newCell)) {
+      if (!newBorderCell.isBomb) {
+        newBorderCell.value++;
+      }
+    }
+  };
+
   private _getCellOrThrow = (coordinate: Coordinate): Cell => {
     const { row, column } = coordinate;
 
@@ -162,8 +204,8 @@ export default class MineGrid {
     return cell;
   };
 
-  private _setCellOrThrow = (coordinate: Coordinate, cell: Cell) => {
-    const { row, column } = coordinate;
+  private _setCellOrThrow = (cell: Cell) => {
+    const { row, column } = cell.coordinate;
     this._getRowOrThrow(row)[column] = cell;
 
     if (cell.isBomb) {
@@ -212,10 +254,7 @@ export default class MineGrid {
         if (cell.hasValue) {
           cell.value = numNeighboringBombs;
         } else {
-          this._setCellOrThrow(
-            { row, column },
-            Cell.createNonBombCell(numNeighboringBombs, { row, column })
-          );
+          this._setCellOrThrow(Cell.createNonBombCell(numNeighboringBombs, { row, column }));
         }
       }
     }
