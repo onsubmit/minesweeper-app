@@ -7,7 +7,7 @@ import { assertDefined } from './testHelpers';
 describe('MineGrid', () => {
   describe('build', () => {
     it('should create a minimal MineGrid with no bomb', () => {
-      const field = MineGrid.build(1, 1, 0);
+      const field = MineGrid.build({ rows: 1, columns: 1, numBombs: 0, minBombRow: 0 });
       expect(field.bombs).toHaveLength(0);
 
       const cell = field.getCell({ row: 0, column: 0 });
@@ -18,7 +18,7 @@ describe('MineGrid', () => {
     });
 
     it('should create a minimal MineGrid with a bomb', () => {
-      const field = MineGrid.build(1, 1, 1);
+      const field = MineGrid.build({ rows: 1, columns: 1, numBombs: 1, minBombRow: 0 });
       expect(field.bombs).toHaveLength(1);
       expect(field.bombs[0]).toStrictEqual(field.getCell({ row: 0, column: 0 }));
 
@@ -30,7 +30,7 @@ describe('MineGrid', () => {
     });
 
     it('should create a basic MineGrid', () => {
-      const field = MineGrid.build(2, 2, 1);
+      const field = MineGrid.build({ rows: 2, columns: 2, numBombs: 1, minBombRow: 0 });
       expect(field.bombs).toHaveLength(1);
       assertDefined(field.bombs[0]);
       const {
@@ -64,7 +64,7 @@ describe('MineGrid', () => {
     }
 
     it('should get a the cell border for a cell in the top-left corner', () => {
-      const field = MineGrid.build(3, 3, 0);
+      const field = MineGrid.build({ rows: 3, columns: 3, numBombs: 0, minBombRow: 0 });
       const cell = field.getCell({ row: 0, column: 0 });
       const border = field.getCellBorder(cell);
       expect(border).toHaveLength(3);
@@ -74,7 +74,7 @@ describe('MineGrid', () => {
     });
 
     it('should get a the cell border for a cell in the top-right corner', () => {
-      const field = MineGrid.build(3, 3, 0);
+      const field = MineGrid.build({ rows: 3, columns: 3, numBombs: 0, minBombRow: 0 });
       const cell = field.getCell({ row: 0, column: 2 });
       const border = field.getCellBorder(cell);
       expect(border).toHaveLength(3);
@@ -84,7 +84,7 @@ describe('MineGrid', () => {
     });
 
     it('should get a the cell border for a cell in the bottom-left corner', () => {
-      const field = MineGrid.build(3, 3, 0);
+      const field = MineGrid.build({ rows: 3, columns: 3, numBombs: 0, minBombRow: 0 });
       const cell = field.getCell({ row: 2, column: 0 });
       const border = field.getCellBorder(cell);
       expect(border).toHaveLength(3);
@@ -94,7 +94,7 @@ describe('MineGrid', () => {
     });
 
     it('should get a the cell border for a cell in the bottom-right corner', () => {
-      const field = MineGrid.build(3, 3, 0);
+      const field = MineGrid.build({ rows: 3, columns: 3, numBombs: 0, minBombRow: 0 });
       const cell = field.getCell({ row: 2, column: 2 });
       const border = field.getCellBorder(cell);
       expect(border).toHaveLength(3);
@@ -104,7 +104,7 @@ describe('MineGrid', () => {
     });
 
     it('should get a the cell border for a cell on the top edge', () => {
-      const field = MineGrid.build(3, 3, 0);
+      const field = MineGrid.build({ rows: 3, columns: 3, numBombs: 0, minBombRow: 0 });
       const cell = field.getCell({ row: 0, column: 1 });
       const border = field.getCellBorder(cell);
       expect(border).toHaveLength(5);
@@ -116,7 +116,7 @@ describe('MineGrid', () => {
     });
 
     it('should get a the cell border for a cell on the left edge', () => {
-      const field = MineGrid.build(3, 3, 0);
+      const field = MineGrid.build({ rows: 3, columns: 3, numBombs: 0, minBombRow: 0 });
       const cell = field.getCell({ row: 1, column: 0 });
       const border = field.getCellBorder(cell);
       expect(border).toHaveLength(5);
@@ -128,7 +128,7 @@ describe('MineGrid', () => {
     });
 
     it('should get a the cell border for a cell on the bottom edge', () => {
-      const field = MineGrid.build(3, 3, 0);
+      const field = MineGrid.build({ rows: 3, columns: 3, numBombs: 0, minBombRow: 0 });
       const cell = field.getCell({ row: 2, column: 1 });
       const border = field.getCellBorder(cell);
       expect(border).toHaveLength(5);
@@ -140,7 +140,7 @@ describe('MineGrid', () => {
     });
 
     it('should get a the cell border for a cell on the right edge', () => {
-      const field = MineGrid.build(3, 3, 0);
+      const field = MineGrid.build({ rows: 3, columns: 3, numBombs: 0, minBombRow: 0 });
       const cell = field.getCell({ row: 1, column: 2 });
       const border = field.getCellBorder(cell);
       expect(border).toHaveLength(5);
@@ -152,7 +152,7 @@ describe('MineGrid', () => {
     });
 
     it('should get a the cell border for an interior cell', () => {
-      const field = MineGrid.build(3, 3, 0);
+      const field = MineGrid.build({ rows: 3, columns: 3, numBombs: 0, minBombRow: 0 });
       const cell = field.getCell({ row: 1, column: 1 });
       const border = field.getCellBorder(cell);
       expect(border).toHaveLength(8);
@@ -169,31 +169,31 @@ describe('MineGrid', () => {
 
   describe('errors', () => {
     it('should throw when creating a MineGrid with invalid number of rows', () => {
-      expect(() => MineGrid.build(-2, 1, 1)).toThrowError(
-        'Number must be greater than or equal to 0. Received: -2'
-      );
+      expect(() =>
+        MineGrid.build({ rows: -2, columns: 1, numBombs: 1, minBombRow: 0 })
+      ).toThrowError('Number must be greater than or equal to 0. Received: -2');
     });
 
     it('should throw when creating a MineGrid with invalid number of columns', () => {
-      expect(() => MineGrid.build(1, -2, 1)).toThrowError(
-        'Number must be greater than or equal to 0. Received: -2'
-      );
+      expect(() =>
+        MineGrid.build({ rows: 1, columns: -2, numBombs: 1, minBombRow: 0 })
+      ).toThrowError('Number must be greater than or equal to 0. Received: -2');
     });
 
     it('should throw when creating a MineGrid with invalid number of bombs', () => {
-      expect(() => MineGrid.build(5, 5, -1)).toThrowError(
-        'Number must be greater than or equal to 0. Received: -1'
-      );
+      expect(() =>
+        MineGrid.build({ rows: 5, columns: 5, numBombs: -1, minBombRow: 0 })
+      ).toThrowError('Number must be greater than or equal to 0. Received: -1');
     });
 
     it('should throw when creating a MineGrid with too many bombs', () => {
-      expect(() => MineGrid.build(5, 5, 26)).toThrowError(
-        'Number must be less than or equal to 25. Received: 26'
-      );
+      expect(() =>
+        MineGrid.build({ rows: 5, columns: 5, numBombs: 26, minBombRow: 0 })
+      ).toThrowError('Number must be less than or equal to 25. Received: 26');
     });
 
     it('should throw when accessing a coordinate with invalid row', () => {
-      const field = MineGrid.build(5, 5, 0);
+      const field = MineGrid.build({ rows: 5, columns: 5, numBombs: 0, minBombRow: 0 });
       expect(() => field.getCell({ row: 10, column: 2 })).toThrowError(
         'Number must be less than 5. Received: 10'
       );
@@ -203,7 +203,7 @@ describe('MineGrid', () => {
     });
 
     it('should throw when accessing a coordinate with invalid column', () => {
-      const field = MineGrid.build(5, 5, 0);
+      const field = MineGrid.build({ rows: 5, columns: 5, numBombs: 0, minBombRow: 0 });
       expect(() => field.getCell({ row: 0, column: 10 })).toThrowError(
         'Number must be less than 5. Received: 10'
       );

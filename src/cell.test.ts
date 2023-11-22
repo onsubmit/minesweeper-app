@@ -63,7 +63,7 @@ describe('Cell', () => {
   });
 
   it('should throw when accessing the value of an unknown cell', () => {
-    const cell = Cell.createUnknownCell({ row: 0, column: 0 });
+    const cell = Cell.createUnknownCell({ row: 0, column: 0 }, { isLocked: false });
     expect(() => cell.value).toThrowError('Value not calculated yet');
   });
 });

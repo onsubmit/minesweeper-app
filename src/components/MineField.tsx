@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import { useState } from 'react';
 
 import Cell from '../cell';
@@ -17,12 +18,18 @@ export default function MineField({ mines }: MineFieldProps) {
 
   const onClick = (row: number, column: number) => {
     return (e: React.MouseEvent<HTMLTableCellElement>) => {
+      const cell = mines.getCell({ row, column });
+
+      if (cell.isLocked && cell.value === 0) {
+        e.preventDefault();
+        return false;
+      }
+
       const isFirstClick = gameState === 'not-started';
       if (isFirstClick) {
         setGameState('started');
       }
 
-      const cell = mines.getCell({ row, column });
       const isNumberCell = cell.isVisible && !cell.isFlagged && !cell.isBomb;
 
       let removeClearedRows = true;
@@ -98,7 +105,10 @@ export default function MineField({ mines }: MineFieldProps) {
                 key={`(${r},${c})`}
                 onClick={onClick(r, c)}
                 onContextMenu={onClick(r, c)}
-                className={cell.isVisible ? styles.visible : undefined}
+                className={classNames({
+                  [styles.visible!]: cell.isVisible,
+                  [styles.empty!]: cell.isLocked && (cell.value === 0 || cell.isVisible),
+                })}
               >
                 <MineCell cell={cell} />
               </td>
