@@ -79,9 +79,9 @@ export default class Cell {
       return '🚩';
     }
 
-    // if (!this.isVisible) {
-    //   return '';
-    // }
+    if (!this.isVisible) {
+      return '';
+    }
 
     if (this.isBomb) {
       return '💥';
