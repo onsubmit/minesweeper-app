@@ -2,7 +2,8 @@ import { Coordinate } from './mineGrid';
 
 const BOMB_VALUE = -1;
 
-type CellCreationOptins = Partial<{
+type CellCreationOptions = Partial<{
+  isReserved: boolean;
   isLocked: boolean;
 }>;
 
@@ -11,6 +12,7 @@ export default class Cell {
 
   private _isVisible: boolean;
   private _isFlagged: boolean;
+  private _isReserved: boolean;
   private _isLocked: boolean;
 
   readonly coordinate: Coordinate;
@@ -18,19 +20,21 @@ export default class Cell {
   private constructor(
     value: number | null,
     coordinate: Coordinate,
-    options: CellCreationOptins = { isLocked: false }
+    options: CellCreationOptions = { isReserved: false, isLocked: false }
   ) {
     this._value = value;
     this._isVisible = false;
     this._isFlagged = false;
+    this._isReserved = options.isReserved ?? false;
     this._isLocked = options.isLocked ?? false;
 
     this.coordinate = coordinate;
   }
 
   static createNonBombCell = (value: number, coordinate: Coordinate) => new Cell(value, coordinate);
-  static createBombCell = (coordinate: Coordinate) => new Cell(BOMB_VALUE, coordinate);
-  static createUnknownCell = (coordinate: Coordinate, options: CellCreationOptins) =>
+  static createBombCell = (coordinate: Coordinate, options: CellCreationOptions) =>
+    new Cell(BOMB_VALUE, coordinate, options);
+  static createUnknownCell = (coordinate: Coordinate, options: CellCreationOptions) =>
     new Cell(null, coordinate, options);
 
   get value(): number {
@@ -57,6 +61,10 @@ export default class Cell {
     return this._isFlagged;
   }
 
+  get isReserved(): boolean {
+    return this._isReserved;
+  }
+
   get isLocked(): boolean {
     return this._isLocked;
   }
@@ -79,7 +87,15 @@ export default class Cell {
       return '🚩';
     }
 
-    if (!this.isVisible) {
+    // if (!this.isVisible) {
+    //   return '';
+    // }
+
+    // if (this.isLocked) {
+    //   return '🔒';
+    // }
+
+    if (this.isReserved) {
       return '';
     }
 

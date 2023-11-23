@@ -21,13 +21,22 @@ export default function MineField({ mines, newRowCount }: MineFieldProps) {
     if (!newRowCount) {
       return;
     }
+
+    mines.addNewRow();
+    setGrid((_) => mines.grid.map((row) => row.map((cell) => cell)));
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- Only react when newRowCount updates
   }, [newRowCount]);
 
   const onClick = (row: number, column: number) => {
     return (e: React.MouseEvent<HTMLTableCellElement>) => {
       const cell = mines.getCell({ row, column });
 
-      if (cell.isLocked && cell.value === 0) {
+      if (cell.isReserved && cell.value === 0) {
+        e.preventDefault();
+        return false;
+      }
+
+      if (cell.isLocked) {
         e.preventDefault();
         return false;
       }
@@ -114,7 +123,7 @@ export default function MineField({ mines, newRowCount }: MineFieldProps) {
                 onContextMenu={onClick(r, c)}
                 className={classNames({
                   [styles.visible!]: cell.isVisible,
-                  [styles.empty!]: cell.isLocked && (cell.value === 0 || cell.isVisible),
+                  [styles.empty!]: cell.isReserved && (cell.value === 0 || cell.isVisible),
                 })}
               >
                 <MineCell cell={cell} />

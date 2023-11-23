@@ -15,10 +15,13 @@ export default class MineGrid {
 
   readonly rows: number;
   readonly columns: number;
+  maxReservedRow: number;
 
-  private constructor(rows: number, columns: number, bombChance: number) {
+  private constructor(rows: number, columns: number, bombChance: number, maxReservedRow: number) {
     this.rows = rows;
     this.columns = columns;
+    this.maxReservedRow = maxReservedRow;
+
     this._bombChance = bombChance;
   }
 
@@ -38,16 +41,16 @@ export default class MineGrid {
     const numBombsSchema = nonNegativeSchema.lte((rows - minBombRow) * columns);
     numBombs = simpleParse(numBombsSchema, numBombs);
 
-    const mineGrid = new MineGrid(rows, columns, numBombs / (rows * columns));
+    const mineGrid = new MineGrid(rows, columns, numBombs / (rows * columns), minBombRow - 1);
     mineGrid._grid = Array.from({ length: rows }, (_, row) =>
       Array.from({ length: columns }, (_, column) =>
-        Cell.createUnknownCell({ row, column }, { isLocked: row < minBombRow - 1 })
+        Cell.createUnknownCell({ row, column }, { isReserved: row < minBombRow - 1 })
       )
     );
 
     const bombCoordinates = MineGrid._getRandomBombCoordinates(rows, columns, numBombs, minBombRow);
     for (const bombCoordinate of bombCoordinates) {
-      const bombCell = Cell.createBombCell(bombCoordinate);
+      const bombCell = Cell.createBombCell(bombCoordinate, { isReserved: false });
       mineGrid._setCellOrThrow(bombCell);
     }
 
@@ -114,13 +117,35 @@ export default class MineGrid {
     return cells;
   };
 
+  addNewRow = () => {
+    const newRow = Array.from({ length: this.columns }, (_, column) =>
+      Math.random() < this._bombChance
+        ? Cell.createBombCell({ row: 0, column }, { isLocked: true })
+        : Cell.createUnknownCell({ row: 0, column }, { isLocked: true })
+    );
+
+    const reservedRows = this._grid.reduce<number[]>(
+      (acc, row, rowIndex) => (row.every((cell) => cell.isReserved) ? [...acc, rowIndex] : acc),
+      []
+    );
+
+    if (reservedRows.length === 0) {
+      alert('game over');
+      return;
+    }
+
+    this._grid.splice(reservedRows.at(-1)!, 1);
+    this.grid.unshift(newRow);
+    this._determineCellValues();
+  };
+
   removeClearedRows = (): number => {
     const rowsToRemove: number[] = [];
     for (let row = 0; row < this.rows; row++) {
       const gridRow = this._getRowOrThrow(row);
 
       const isCellClearFn = (cell: Cell) =>
-        !cell.isLocked && (cell.isVisible || (cell.isFlagged && cell.isBomb));
+        !cell.isReserved && (cell.isVisible || (cell.isFlagged && cell.isBomb));
 
       const isRowClear = gridRow.every(isCellClearFn);
 
@@ -140,7 +165,7 @@ export default class MineGrid {
 
     for (let row = numClearedRows - 1; row >= 0; row--) {
       const newRow = Array.from({ length: this.columns }, (_, column) =>
-        Cell.createUnknownCell({ row, column }, { isLocked: true })
+        Cell.createUnknownCell({ row, column }, { isReserved: true })
       );
 
       this._grid.unshift(newRow);
@@ -171,7 +196,8 @@ export default class MineGrid {
     for (let row = 0; row < this.rows; row++) {
       for (let column = 0; column < this.columns; column++) {
         const coordinate = { row, column };
-        if (this.getCell(coordinate).isBomb) {
+        const cell = this.getCell(coordinate);
+        if (cell.isBomb || cell.isReserved) {
           continue;
         }
 
@@ -189,7 +215,7 @@ export default class MineGrid {
     }
 
     const newCoordinate = getRandomArrayElement(nonBombCoordinates)!;
-    const newCell = Cell.createBombCell(newCoordinate);
+    const newCell = Cell.createBombCell(newCoordinate, { isReserved: false });
     this._setCellOrThrow(newCell);
     for (const newBorderCell of this.getCellBorder(newCell)) {
       if (!newBorderCell.isBomb) {
@@ -250,7 +276,12 @@ export default class MineGrid {
               continue;
             }
 
-            if (this._getCellOrThrow({ row: r, column: c }).isBomb) {
+            const cell = this._getCellOrThrow({ row: r, column: c });
+            if (cell.isLocked) {
+              continue;
+            }
+
+            if (cell.isBomb) {
               numNeighboringBombs++;
             }
           }

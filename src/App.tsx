@@ -5,7 +5,7 @@ import MineField from './components/MineField';
 import MineGrid from './mineGrid';
 import useLoopingTimer from './useLoopingTimer';
 
-const TIMER_START_SECONDS = 10;
+const TIMER_START_SECONDS = 3;
 
 function App() {
   const timer = useLoopingTimer({ seconds: TIMER_START_SECONDS });
