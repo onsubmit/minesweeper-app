@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import Cell from '../cell';
 import MineGrid from '../mineGrid';
@@ -8,13 +8,20 @@ import styles from './MineField.module.css';
 
 type MineFieldProps = {
   mines: MineGrid;
+  newRowCount: number;
 };
 
 type GameState = 'not-started' | 'started' | 'ended';
 
-export default function MineField({ mines }: MineFieldProps) {
+export default function MineField({ mines, newRowCount }: MineFieldProps) {
   const [gameState, setGameState] = useState<GameState>('not-started');
   const [grid, setGrid] = useState(mines.grid);
+
+  useEffect(() => {
+    if (!newRowCount) {
+      return;
+    }
+  }, [newRowCount]);
 
   const onClick = (row: number, column: number) => {
     return (e: React.MouseEvent<HTMLTableCellElement>) => {
