@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { integerSchema, simpleParse } from './utils/zodUtils';
 
@@ -9,16 +9,24 @@ type TimerProps = {
 export default function useLoopingTimer({ seconds }: TimerProps) {
   seconds = simpleParse(integerSchema.gt(0), seconds);
 
-  const [timer, setTimer] = useState({ seconds, restarted: false });
+  const timerRef = useRef({ seconds, restarted: false });
+  const [stop, setStop] = useState(false);
+
+  const stopTimer = useCallback(() => setStop(true), []);
 
   useEffect(() => {
     const intervalId = setInterval(() => {
-      const newValue = timer.seconds === 1 ? seconds : timer.seconds - 1;
-      setTimer({ seconds: newValue, restarted: newValue === seconds });
+      const newValue = timerRef.current.seconds === 1 ? seconds : timerRef.current.seconds - 1;
+      timerRef.current.seconds = newValue;
+      timerRef.current.restarted = newValue === seconds;
     }, 1000);
 
-    return () => clearInterval(intervalId);
-  }, [seconds, timer]);
+    if (stop) {
+      clearInterval(intervalId);
+    }
 
-  return timer;
+    return () => clearInterval(intervalId);
+  }, [seconds, stop]);
+
+  return { timer: timerRef.current, stopTimer };
 }

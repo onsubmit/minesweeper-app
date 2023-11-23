@@ -8,7 +8,7 @@ import useLoopingTimer from './useLoopingTimer';
 const TIMER_START_SECONDS = 3;
 
 function App() {
-  const timer = useLoopingTimer({ seconds: TIMER_START_SECONDS });
+  const { timer, stopTimer } = useLoopingTimer({ seconds: TIMER_START_SECONDS });
   const [newRowCount, setNewRowCount] = useState(0);
   const mines = useMemo(() => {
     const mineFieldInput = {
@@ -25,7 +25,7 @@ function App() {
     if (timer.restarted) {
       setNewRowCount((v) => v + 1);
     }
-  }, [timer]);
+  }, [timer, stopTimer]);
 
   return (
     <div className={styles.app}>
