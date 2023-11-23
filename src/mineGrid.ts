@@ -117,7 +117,7 @@ export default class MineGrid {
     return cells;
   };
 
-  addNewRow = () => {
+  tryAddNewRow = (): boolean => {
     const newRow = Array.from({ length: this.columns }, (_, column) =>
       Math.random() < this._bombChance
         ? Cell.createBombCell({ row: 0, column }, { isLocked: true })
@@ -130,16 +130,17 @@ export default class MineGrid {
     );
 
     if (reservedRows.length === 0) {
-      alert('game over');
-      return;
+      return false;
     }
 
     this._grid.splice(reservedRows.at(-1)!, 1);
     this.grid.unshift(newRow);
     this._determineCellValues();
+    return true;
   };
 
-  removeClearedRows = (): number => {
+  removeClearedRows = (): boolean => {
+    // Determine which rows can be removed.
     const rowsToRemove: number[] = [];
     for (let row = 0; row < this.rows; row++) {
       const gridRow = this._getRowOrThrow(row);
@@ -154,24 +155,41 @@ export default class MineGrid {
       }
     }
 
-    const numClearedRows = rowsToRemove.length;
-    if (numClearedRows === 0) {
-      return 0;
+    if (rowsToRemove.length === 0) {
+      return true;
     }
 
+    // Leading empty rows are exempt.
+    while (this._grid[rowsToRemove[0]]?.every((cell) => cell.value === 0)) {
+      rowsToRemove.splice(0, 1);
+    }
+
+    const numClearedRows = rowsToRemove.length;
+    if (numClearedRows === 0) {
+      return true;
+    }
+
+    // Remove those rows.
     for (let r = numClearedRows - 1; r >= 0; r--) {
       this._grid.splice(rowsToRemove[r]!, 1);
     }
 
-    for (let row = numClearedRows - 1; row >= 0; row--) {
+    // Insert new, empty rows at the beginning.
+    for (let row = 0; row < numClearedRows; row++) {
+      const insertionRow = this._getRowForInsertion();
+      if (insertionRow < 0) {
+        return false;
+      }
+
       const newRow = Array.from({ length: this.columns }, (_, column) =>
-        Cell.createUnknownCell({ row, column }, { isReserved: true })
+        Cell.createZeroCell({ row: insertionRow, column }, { isVisible: true })
       );
 
-      this._grid.unshift(newRow);
+      this._grid.splice(insertionRow, 0, newRow);
     }
 
-    for (let row = numClearedRows; row < this.rows; row++) {
+    // Recalculate the row numbers.
+    for (let row = 0; row < this.rows; row++) {
       for (let column = 0; column < this.columns; column++) {
         const cell = this.getCell({ row, column });
         cell.coordinate.row = row;
@@ -179,7 +197,7 @@ export default class MineGrid {
     }
 
     this._determineCellValues();
-    return numClearedRows;
+    return true;
   };
 
   tryMoveBombCellElsewhere = (cell: Cell): void => {
@@ -251,6 +269,22 @@ export default class MineGrid {
     }
 
     return gridRow;
+  };
+
+  private _getRowForInsertion = (): number => {
+    const clearRows = this._grid.reduce<number[]>(
+      (acc, row, rowIndex) =>
+        row.every((cell) => (cell.isVisible || cell.isReserved) && cell.value === 0)
+          ? [...acc, rowIndex]
+          : acc,
+      []
+    );
+
+    if (clearRows.length === 0) {
+      return -1;
+    }
+
+    return clearRows.at(-1)! + 1;
   };
 
   private _determineCellValues = () => {

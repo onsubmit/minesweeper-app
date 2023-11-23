@@ -5,6 +5,7 @@ const BOMB_VALUE = -1;
 type CellCreationOptions = Partial<{
   isReserved: boolean;
   isLocked: boolean;
+  isVisible: boolean;
 }>;
 
 export default class Cell {
@@ -20,10 +21,10 @@ export default class Cell {
   private constructor(
     value: number | null,
     coordinate: Coordinate,
-    options: CellCreationOptions = { isReserved: false, isLocked: false }
+    options: CellCreationOptions = { isReserved: false, isLocked: false, isVisible: false }
   ) {
     this._value = value;
-    this._isVisible = false;
+    this._isVisible = options.isVisible ?? false;
     this._isFlagged = false;
     this._isReserved = options.isReserved ?? false;
     this._isLocked = options.isLocked ?? false;
@@ -34,6 +35,8 @@ export default class Cell {
   static createNonBombCell = (value: number, coordinate: Coordinate) => new Cell(value, coordinate);
   static createBombCell = (coordinate: Coordinate, options: CellCreationOptions) =>
     new Cell(BOMB_VALUE, coordinate, options);
+  static createZeroCell = (coordinate: Coordinate, options: CellCreationOptions) =>
+    new Cell(0, coordinate, options);
   static createUnknownCell = (coordinate: Coordinate, options: CellCreationOptions) =>
     new Cell(null, coordinate, options);
 
@@ -87,13 +90,9 @@ export default class Cell {
       return '🚩';
     }
 
-    // if (!this.isVisible) {
-    //   return '';
-    // }
-
-    // if (this.isLocked) {
-    //   return '🔒';
-    // }
+    if (!this.isVisible) {
+      return '';
+    }
 
     if (this.isReserved) {
       return '';

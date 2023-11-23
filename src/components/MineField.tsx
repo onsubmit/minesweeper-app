@@ -22,7 +22,10 @@ export default function MineField({ mines, newRowCount }: MineFieldProps) {
       return;
     }
 
-    mines.addNewRow();
+    if (!mines.tryAddNewRow()) {
+      endGame();
+    }
+
     setGrid((_) => mines.grid.map((row) => row.map((cell) => cell)));
     // eslint-disable-next-line react-hooks/exhaustive-deps -- Only react when newRowCount updates
   }, [newRowCount]);
@@ -64,25 +67,13 @@ export default function MineField({ mines, newRowCount }: MineFieldProps) {
 
           if (cell.isBomb) {
             removeClearedRows = false;
-            setGameState('ended');
-            mines.bombs.forEach((c) => reveal(c, { revealFlaggedCells: true }));
+            endGame();
           }
         }
 
         if (removeClearedRows) {
-          const numClearedRows = mines.removeClearedRows();
-
-          // In newly added rows, reveal the zeros that border already visible zeros.
-          if (numClearedRows > 0) {
-            for (let column = 0; column < mines.columns; column++) {
-              const cell = mines.getCell({ row: numClearedRows - 1, column });
-              if (
-                cell.value === 0 &&
-                mines.getCellBorder(cell).some((c) => c.isVisible && c.value === 0)
-              ) {
-                reveal(cell, { revealFlaggedCells: true });
-              }
-            }
+          if (!mines.removeClearedRows()) {
+            alert('game over');
           }
         }
 
@@ -108,6 +99,11 @@ export default function MineField({ mines, newRowCount }: MineFieldProps) {
     if (cell.value === 0) {
       mines.getCellBorder(cell).forEach((c) => reveal(c, { revealFlaggedCells: false }));
     }
+  };
+
+  const endGame = () => {
+    setGameState('ended');
+    mines.bombs.forEach((c) => reveal(c, { revealFlaggedCells: true }));
   };
 
   return (
