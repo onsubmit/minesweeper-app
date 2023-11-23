@@ -160,7 +160,7 @@ export default class MineGrid {
     }
 
     // Leading empty rows are exempt.
-    while (this._grid[rowsToRemove[0]]?.every((cell) => cell.value === 0)) {
+    while (this._grid[rowsToRemove[0]!]?.every((cell) => cell.value === 0)) {
       rowsToRemove.splice(0, 1);
     }
 

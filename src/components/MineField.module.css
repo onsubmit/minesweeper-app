@@ -3,6 +3,16 @@
 
   tr {
     min-height: 1rem;
+
+    &.maxReservedRow {
+      td {
+        box-shadow: inset 0px -0.2vh 0px 0px #7B0000, inset -0.2vh 0px 0px 0px #666;
+
+        &.locked {
+          box-shadow: inset 0px -0.2vh 0px 0px #7B0000, inset -0.2vh 0px 0px 0px #666, inset 0 0 0 0.2vh #FFF;
+        }
+      }
+    }
   }
 
   td {
@@ -24,12 +34,16 @@
       box-shadow: inset -0.2vh -0.2vh 0 0 #7B7B7B
     }
 
-    &:not(.visible,.empty):hover {
+    &:not(.visible,.reserved,.locked):hover {
       background: #917777;
       box-shadow: inset -0.2vh -0.2vh 0 0 #333, inset 0 0 0 0.2vh #BC9E9E;
     }
 
-    &.empty {
+    &.locked {
+      background: #BDBDBD;
+    }
+
+    &.reserved {
       background: #7B7B7B;
       box-shadow: inset -0.2vh -0.2vh 0 0 #666
     }

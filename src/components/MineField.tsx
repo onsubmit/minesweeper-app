@@ -110,7 +110,11 @@ export default function MineField({ mines, newRowCount }: MineFieldProps) {
     <table className={styles.mineField} cellSpacing="0" cellPadding="0">
       <tbody>
         {grid.map((row, r) => (
-          <tr id={`row_${r}`} key={r}>
+          <tr
+            id={`row_${r}`}
+            key={r}
+            className={classNames({ [styles.maxReservedRow]: r === mines.maxReservedRow - 1 })}
+          >
             {row.map((cell, c) => (
               <td
                 id={`cell_${r}-${c}`}
@@ -119,7 +123,8 @@ export default function MineField({ mines, newRowCount }: MineFieldProps) {
                 onContextMenu={onClick(r, c)}
                 className={classNames({
                   [styles.visible!]: cell.isVisible,
-                  [styles.empty!]: cell.isReserved && (cell.value === 0 || cell.isVisible),
+                  [styles.locked!]: cell.isLocked,
+                  [styles.reserved!]: cell.isReserved && (cell.value === 0 || cell.isVisible),
                 })}
               >
                 <MineCell cell={cell} />
