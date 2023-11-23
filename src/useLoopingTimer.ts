@@ -20,5 +20,5 @@ export default function useLoopingTimer({ seconds }: TimerProps) {
     return () => clearInterval(intervalId);
   }, [seconds, timer]);
 
-  return [timer];
+  return timer;
 }

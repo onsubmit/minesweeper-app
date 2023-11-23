@@ -8,7 +8,7 @@ import useLoopingTimer from './useLoopingTimer';
 const TIMER_START_SECONDS = 10;
 
 function App() {
-  const [timer] = useLoopingTimer({ seconds: TIMER_START_SECONDS });
+  const timer = useLoopingTimer({ seconds: TIMER_START_SECONDS });
   const [newRowCount, setNewRowCount] = useState(0);
   const mines = useMemo(() => {
     const mineFieldInput = {
@@ -22,7 +22,7 @@ function App() {
   }, []);
 
   useEffect(() => {
-    if (timer?.restarted) {
+    if (timer.restarted) {
       setNewRowCount((v) => v + 1);
     }
   }, [timer]);
