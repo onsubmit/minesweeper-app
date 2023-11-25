@@ -14,8 +14,7 @@ function App() {
     const mineFieldInput = {
       rows: 20,
       columns: 10,
-      numBombs: 10,
-      minBombRow: 10,
+      numBombs: 20,
     };
 
     return MineGrid.build(mineFieldInput);

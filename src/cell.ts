@@ -3,7 +3,6 @@ import { Coordinate } from './mineGrid';
 const BOMB_VALUE = -1;
 
 type CellCreationOptions = Partial<{
-  isReserved: boolean;
   isLocked: boolean;
   isVisible: boolean;
 }>;
@@ -13,7 +12,6 @@ export default class Cell {
 
   private _isVisible: boolean;
   private _isFlagged: boolean;
-  private _isReserved: boolean;
   private _isLocked: boolean;
 
   readonly coordinate: Coordinate;
@@ -21,23 +19,22 @@ export default class Cell {
   private constructor(
     value: number | null,
     coordinate: Coordinate,
-    options: CellCreationOptions = { isReserved: false, isLocked: false, isVisible: false }
+    options: CellCreationOptions = { isLocked: false, isVisible: false }
   ) {
     this._value = value;
     this._isVisible = options.isVisible ?? false;
     this._isFlagged = false;
-    this._isReserved = options.isReserved ?? false;
     this._isLocked = options.isLocked ?? false;
 
     this.coordinate = coordinate;
   }
 
   static createNonBombCell = (value: number, coordinate: Coordinate) => new Cell(value, coordinate);
-  static createBombCell = (coordinate: Coordinate, options: CellCreationOptions) =>
+  static createBombCell = (coordinate: Coordinate, options?: CellCreationOptions) =>
     new Cell(BOMB_VALUE, coordinate, options);
-  static createZeroCell = (coordinate: Coordinate, options: CellCreationOptions) =>
+  static createZeroCell = (coordinate: Coordinate, options?: CellCreationOptions) =>
     new Cell(0, coordinate, options);
-  static createUnknownCell = (coordinate: Coordinate, options: CellCreationOptions) =>
+  static createUnknownCell = (coordinate: Coordinate, options?: CellCreationOptions) =>
     new Cell(null, coordinate, options);
 
   get value(): number {
@@ -64,10 +61,6 @@ export default class Cell {
     return this._isFlagged;
   }
 
-  get isReserved(): boolean {
-    return this._isReserved;
-  }
-
   get isLocked(): boolean {
     return this._isLocked;
   }
@@ -91,10 +84,6 @@ export default class Cell {
     }
 
     if (!this.isVisible) {
-      return '';
-    }
-
-    if (this.isReserved) {
       return '';
     }
 

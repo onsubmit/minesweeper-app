@@ -13,7 +13,7 @@ describe('Cell', () => {
   });
 
   it('should create a bomb Cell', () => {
-    const cell = Cell.createBombCell({ row: 0, column: 0 }, { isReserved: false });
+    const cell = Cell.createBombCell({ row: 0, column: 0 });
     expect(cell.coordinate).toEqual({ row: 0, column: 0 });
     expect(cell.value).toBe(-1);
     expect(cell.isVisible).toBe(false);
@@ -63,7 +63,7 @@ describe('Cell', () => {
   });
 
   it('should throw when accessing the value of an unknown cell', () => {
-    const cell = Cell.createUnknownCell({ row: 0, column: 0 }, { isReserved: false });
+    const cell = Cell.createUnknownCell({ row: 0, column: 0 });
     expect(() => cell.value).toThrowError('Value not calculated yet');
   });
 });

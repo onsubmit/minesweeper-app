@@ -1,7 +1,6 @@
 import classNames from 'classnames';
 import { useEffect, useState } from 'react';
 
-import Cell from '../cell';
 import MineGrid from '../mineGrid';
 import MineCell from './MineCell';
 import styles from './MineField.module.css';
@@ -30,14 +29,14 @@ export default function MineField({ mines, newRowCount }: MineFieldProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- Only react when newRowCount updates
   }, [newRowCount]);
 
+  // useMemo(() => {
+  //   reveal(mines.getCell({ row: 0, column: 0 }), { revealFlaggedCells: false });
+  //   setGrid((_) => mines.grid.map((row) => row.map((cell) => cell)));
+  // }, []);
+
   const onClick = (row: number, column: number) => {
     return (e: React.MouseEvent<HTMLTableCellElement>) => {
       const cell = mines.getCell({ row, column });
-
-      if (cell.isReserved && cell.value === 0) {
-        e.preventDefault();
-        return false;
-      }
 
       if (cell.isLocked) {
         e.preventDefault();
@@ -63,7 +62,7 @@ export default function MineField({ mines, newRowCount }: MineFieldProps) {
             }
           }
 
-          reveal(cell, { revealFlaggedCells: true });
+          mines.reveal(cell, { revealFlaggedCells: true });
 
           if (cell.isBomb) {
             removeClearedRows = false;
@@ -85,36 +84,16 @@ export default function MineField({ mines, newRowCount }: MineFieldProps) {
     };
   };
 
-  const reveal = (cell: Cell, options: { revealFlaggedCells: boolean }) => {
-    if (cell.isVisible) {
-      return;
-    }
-
-    if (cell.isFlagged && !options.revealFlaggedCells) {
-      return;
-    }
-
-    cell.reveal();
-
-    if (cell.value === 0) {
-      mines.getCellBorder(cell).forEach((c) => reveal(c, { revealFlaggedCells: false }));
-    }
-  };
-
   const endGame = () => {
     setGameState('ended');
-    mines.bombs.forEach((c) => reveal(c, { revealFlaggedCells: true }));
+    mines.bombs.forEach((c) => mines.reveal(c, { revealFlaggedCells: true }));
   };
 
   return (
     <table className={styles.mineField} cellSpacing="0" cellPadding="0">
       <tbody>
         {grid.map((row, r) => (
-          <tr
-            id={`row_${r}`}
-            key={r}
-            className={classNames({ [styles.maxReservedRow]: r === mines.maxReservedRow - 1 })}
-          >
+          <tr id={`row_${r}`} key={r}>
             {row.map((cell, c) => (
               <td
                 id={`cell_${r}-${c}`}
@@ -124,7 +103,6 @@ export default function MineField({ mines, newRowCount }: MineFieldProps) {
                 className={classNames({
                   [styles.visible!]: cell.isVisible,
                   [styles.locked!]: cell.isLocked,
-                  [styles.reserved!]: cell.isReserved && (cell.value === 0 || cell.isVisible),
                 })}
               >
                 <MineCell cell={cell} />

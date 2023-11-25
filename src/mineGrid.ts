@@ -15,46 +15,38 @@ export default class MineGrid {
 
   readonly rows: number;
   readonly columns: number;
-  maxReservedRow: number;
 
-  private constructor(rows: number, columns: number, bombChance: number, maxReservedRow: number) {
+  private constructor(rows: number, columns: number, bombChance: number) {
     this.rows = rows;
     this.columns = columns;
-    this.maxReservedRow = maxReservedRow;
 
     this._bombChance = bombChance;
   }
 
-  static build = (options: {
-    rows: number;
-    columns: number;
-    numBombs: number;
-    minBombRow: number;
-  }): MineGrid => {
-    let { rows, columns, numBombs, minBombRow } = options;
+  static build = (options: { rows: number; columns: number; numBombs: number }): MineGrid => {
+    let { rows, columns, numBombs } = options;
 
     const nonNegativeSchema = integerSchema.gte(0);
     rows = simpleParse(nonNegativeSchema, rows);
     columns = simpleParse(nonNegativeSchema, columns);
-    minBombRow = simpleParse(nonNegativeSchema.lt(rows), minBombRow);
+    const minBombRow = Math.ceil(rows / 2);
 
     const numBombsSchema = nonNegativeSchema.lte((rows - minBombRow) * columns);
     numBombs = simpleParse(numBombsSchema, numBombs);
 
-    const mineGrid = new MineGrid(rows, columns, numBombs / (rows * columns), minBombRow - 1);
+    const mineGrid = new MineGrid(rows, columns, numBombs / (rows * columns));
     mineGrid._grid = Array.from({ length: rows }, (_, row) =>
-      Array.from({ length: columns }, (_, column) =>
-        Cell.createUnknownCell({ row, column }, { isReserved: row < minBombRow - 1 })
-      )
+      Array.from({ length: columns }, (_, column) => Cell.createUnknownCell({ row, column }))
     );
 
     const bombCoordinates = MineGrid._getRandomBombCoordinates(rows, columns, numBombs, minBombRow);
     for (const bombCoordinate of bombCoordinates) {
-      const bombCell = Cell.createBombCell(bombCoordinate, { isReserved: false });
+      const bombCell = Cell.createBombCell(bombCoordinate);
       mineGrid._setCellOrThrow(bombCell);
     }
 
     mineGrid._determineCellValues();
+    mineGrid.reveal(mineGrid._getCellOrThrow({ row: 0, column: 0 }), { revealFlaggedCells: false });
 
     return mineGrid;
   };
@@ -117,6 +109,22 @@ export default class MineGrid {
     return cells;
   };
 
+  reveal = (cell: Cell, options: { revealFlaggedCells: boolean }) => {
+    if (cell.isVisible) {
+      return;
+    }
+
+    if (cell.isFlagged && !options.revealFlaggedCells) {
+      return;
+    }
+
+    cell.reveal();
+
+    if (cell.value === 0) {
+      this.getCellBorder(cell).forEach((c) => this.reveal(c, { revealFlaggedCells: false }));
+    }
+  };
+
   tryAddNewRow = (): boolean => {
     const newRow = Array.from({ length: this.columns }, (_, column) =>
       Math.random() < this._bombChance
@@ -124,17 +132,11 @@ export default class MineGrid {
         : Cell.createUnknownCell({ row: 0, column }, { isLocked: true })
     );
 
-    const reservedRows = this._grid.reduce<number[]>(
-      (acc, row, rowIndex) => (row.every((cell) => cell.isReserved) ? [...acc, rowIndex] : acc),
-      []
-    );
-
-    if (reservedRows.length === 0) {
+    if (this._getRowOrThrow(0).some((cell) => cell.value !== 0)) {
       return false;
     }
 
-    this._grid.splice(reservedRows.at(-1)!, 1);
-    this.grid.unshift(newRow);
+    this._grid.splice(0, 1, newRow);
     this._determineCellValues();
     return true;
   };
@@ -145,8 +147,7 @@ export default class MineGrid {
     for (let row = 0; row < this.rows; row++) {
       const gridRow = this._getRowOrThrow(row);
 
-      const isCellClearFn = (cell: Cell) =>
-        !cell.isReserved && (cell.isVisible || (cell.isFlagged && cell.isBomb));
+      const isCellClearFn = (cell: Cell) => cell.isVisible || (cell.isFlagged && cell.isBomb);
 
       const isRowClear = gridRow.every(isCellClearFn);
 
@@ -215,7 +216,7 @@ export default class MineGrid {
       for (let column = 0; column < this.columns; column++) {
         const coordinate = { row, column };
         const cell = this.getCell(coordinate);
-        if (cell.isBomb || cell.isReserved) {
+        if (cell.isBomb) {
           continue;
         }
 
@@ -233,7 +234,7 @@ export default class MineGrid {
     }
 
     const newCoordinate = getRandomArrayElement(nonBombCoordinates)!;
-    const newCell = Cell.createBombCell(newCoordinate, { isReserved: false });
+    const newCell = Cell.createBombCell(newCoordinate);
     this._setCellOrThrow(newCell);
     for (const newBorderCell of this.getCellBorder(newCell)) {
       if (!newBorderCell.isBomb) {
@@ -274,9 +275,7 @@ export default class MineGrid {
   private _getRowForInsertion = (): number => {
     const clearRows = this._grid.reduce<number[]>(
       (acc, row, rowIndex) =>
-        row.every((cell) => (cell.isVisible || cell.isReserved) && cell.value === 0)
-          ? [...acc, rowIndex]
-          : acc,
+        row.every((cell) => cell.isVisible && cell.value === 0) ? [...acc, rowIndex] : acc,
       []
     );
 
