@@ -126,17 +126,22 @@ export default class MineGrid {
   };
 
   tryAddNewRow = (): boolean => {
+    const firstEmptyRowIndex = this._grid.findIndex((row) =>
+      row.every((cell) => cell.isVisible && cell.value === 0)
+    );
+
+    if (firstEmptyRowIndex < 0) {
+      return false;
+    }
+
     const newRow = Array.from({ length: this.columns }, (_, column) =>
       Math.random() < this._bombChance
         ? Cell.createBombCell({ row: 0, column }, { isLocked: true })
         : Cell.createUnknownCell({ row: 0, column }, { isLocked: true })
     );
 
-    if (this._getRowOrThrow(0).some((cell) => cell.value !== 0)) {
-      return false;
-    }
-
-    this._grid.splice(0, 1, newRow);
+    this._grid.splice(firstEmptyRowIndex, 1);
+    this._grid.unshift(newRow);
     this._determineCellValues();
     return true;
   };
@@ -189,14 +194,7 @@ export default class MineGrid {
       this._grid.splice(insertionRow, 0, newRow);
     }
 
-    // Recalculate the row numbers.
-    for (let row = 0; row < this.rows; row++) {
-      for (let column = 0; column < this.columns; column++) {
-        const cell = this.getCell({ row, column });
-        cell.coordinate.row = row;
-      }
-    }
-
+    this._determineCoordinates();
     this._determineCellValues();
     return true;
   };
@@ -243,6 +241,33 @@ export default class MineGrid {
     }
   };
 
+  tryDropLockedRow = (row: number): boolean => {
+    if (row === this.rows) {
+      return false;
+    }
+
+    const canRowDrop = this._getRowOrThrow(row + 1).every(
+      (cell) => cell.isVisible && cell.value === 0
+    );
+
+    if (!canRowDrop) {
+      return false;
+    }
+
+    this._grid.splice(row + 1, 1);
+
+    const newRow = Array.from({ length: this.columns }, (_, column) =>
+      Cell.createUnknownCell({ row, column }, { isVisible: true })
+    );
+
+    this._grid.splice(row, 0, newRow);
+
+    this._determineCoordinates();
+    this._determineCellValues();
+
+    return true;
+  };
+
   private _getCellOrThrow = (coordinate: Coordinate): Cell => {
     const { row, column } = coordinate;
 
@@ -284,6 +309,15 @@ export default class MineGrid {
     }
 
     return clearRows.at(-1)! + 1;
+  };
+
+  private _determineCoordinates = () => {
+    for (let row = 0; row < this.rows; row++) {
+      for (let column = 0; column < this.columns; column++) {
+        const cell = this.getCell({ row, column });
+        cell.coordinate.row = row;
+      }
+    }
   };
 
   private _determineCellValues = () => {
