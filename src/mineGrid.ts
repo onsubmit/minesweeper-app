@@ -244,6 +244,7 @@ export default class MineGrid {
       row < this.rows - 1 && this._getRowOrThrow(row + 1).every((cell) => cell.isVisible);
 
     if (!canRowDrop) {
+      this._getRowOrThrow(row).forEach((cell) => cell.unlock());
       return false;
     }
 
