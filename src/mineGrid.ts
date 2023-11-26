@@ -126,9 +126,7 @@ export default class MineGrid {
   };
 
   tryAddNewRow = (): boolean => {
-    const firstEmptyRowIndex = this._grid.findIndex((row) =>
-      row.every((cell) => cell.isVisible && cell.value === 0)
-    );
+    const firstEmptyRowIndex = this._grid.findIndex((row) => row.every((cell) => cell.isVisible));
 
     if (firstEmptyRowIndex < 0) {
       return false;
@@ -242,13 +240,8 @@ export default class MineGrid {
   };
 
   tryDropLockedRow = (row: number): boolean => {
-    if (row === this.rows) {
-      return false;
-    }
-
-    const canRowDrop = this._getRowOrThrow(row + 1).every(
-      (cell) => cell.isVisible && cell.value === 0
-    );
+    const canRowDrop =
+      row < this.rows - 1 && this._getRowOrThrow(row + 1).every((cell) => cell.isVisible);
 
     if (!canRowDrop) {
       return false;
@@ -263,6 +256,18 @@ export default class MineGrid {
     this._grid.splice(row, 0, newRow);
 
     this._determineCoordinates();
+
+    const afterDropRowIndex = row + 1;
+    const shouldUnlockRow =
+      afterDropRowIndex === this.rows - 1 ||
+      this._getRowOrThrow(afterDropRowIndex + 1).some(
+        (cell) => !cell.isLocked && (cell.isFlagged || !cell.isVisible)
+      );
+
+    if (shouldUnlockRow) {
+      this._getRowOrThrow(afterDropRowIndex).forEach((cell) => cell.unlock());
+    }
+
     this._determineCellValues();
 
     return true;

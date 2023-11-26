@@ -78,6 +78,10 @@ export default class Cell {
     this._isFlagged = !this._isFlagged;
   };
 
+  unlock = () => {
+    this._isLocked = false;
+  };
+
   toString = () => {
     if (this.isFlagged) {
       return '🚩';
