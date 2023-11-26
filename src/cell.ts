@@ -87,6 +87,10 @@ export default class Cell {
       return '🚩';
     }
 
+    if (this.isLocked) {
+      return '🔒';
+    }
+
     if (!this.isVisible) {
       return '';
     }
